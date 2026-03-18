@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Dashboard | NSS GIOE</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --blue:#1565C0; --blue-dark:#0D47A1; --blue-light:#E3F2FD; --blue-mid:#1976D2;
+  --accent:#FFD600; --white:#fff; --off:#F5F7FA; --text:#0D1B2A; --muted:#4A5568;
+  --border:#D0DCF0; --green:#16A34A; --green-l:#DCFCE7; --red:#DC2626; --red-l:#FEE2E2;
+  --amber:#D97706; --amber-l:#FEF3C7; --purple:#7C3AED; --purple-l:#EDE9FE;
+  --sidebar:240px; --r:14px; --rs:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Space Grotesk',sans-serif;color:var(--text);background:var(--off);display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;background:#0A1628;color:white;
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;
+  transition:transform .3s;
+}
+.sidebar-logo{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sidebar-logo-icon{width:40px;height:40px;border-radius:10px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;margin-bottom:10px;}
+.sidebar-logo h2{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;line-height:1.2;}
+.sidebar-logo p{font-size:11px;opacity:.45;margin-top:2px;}
+.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto;}
+.nav-section-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:0 8px;margin:16px 0 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--rs);cursor:pointer;font-size:14px;font-weight:500;color:rgba(255,255,255,.65);transition:all .2s;margin-bottom:2px;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:white;}
+.nav-item.active{background:var(--blue);color:white;}
+.nav-item svg{flex-shrink:0;opacity:.8;}
+.nav-item.active svg{opacity:1;}
+.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.08);}
+.admin-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.06);border-radius:var(--rs);}
+.admin-avatar{width:32px;height:32px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.admin-chip h4{font-size:13px;font-weight:600;}
+.admin-chip p{font-size:11px;opacity:.45;}
+.logout-link{display:block;text-align:center;margin-top:10px;font-size:12px;color:rgba(255,255,255,.35);cursor:pointer;transition:color .2s;}
+.logout-link:hover{color:var(--red);}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{background:white;border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar h1{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--text);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.topbar-badge{padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700;background:var(--red-l);color:var(--red);}
+.content{padding:28px 32px;flex:1;}
+
+/* SECTIONS (tabs) */
+.tab-section{display:none;}
+.tab-section.active{display:block;}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:white;border-radius:var(--r);border:1px solid var(--border);padding:20px 22px;}
+.stat-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.stat-num{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;}
+.stat-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.stat-delta{font-size:12px;font-weight:600;margin-top:6px;}
+.delta-up{color:var(--green);}
+.delta-down{color:var(--red);}
+
+/* CARD */
+.card{background:white;border-radius:var(--r);border:1px solid var(--border);margin-bottom:20px;overflow:hidden;}
+.card-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.card-header h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;}
+.card-body{padding:22px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--rs);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+.btn-blue{background:var(--blue);color:white;}.btn-blue:hover{background:var(--blue-dark);}
+.btn-green{background:var(--green);color:white;}.btn-green:hover{background:#15803D;}
+.btn-red{background:var(--red);color:white;}.btn-red:hover{background:#B91C1C;}
+.btn-outline{background:white;color:var(--text);border:1px solid var(--border);}.btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+.btn-amber{background:var(--amber);color:white;}.btn-amber:hover{background:#B45309;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:11px 16px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);background:var(--off);border-bottom:1px solid var(--border);}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--off);}
+tbody td{padding:13px 16px;font-size:13px;vertical-align:middle;}
+.badge{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;}
+.badge-green{background:var(--green-l);color:var(--green);}
+.badge-red{background:var(--red-l);color:var(--red);}
+.badge-amber{background:var(--amber-l);color:var(--amber);}
+.badge-blue{background:var(--blue-light);color:var(--blue);}
+.badge-purple{background:var(--purple-l);color:var(--purple);}
+
+/* SEARCH + FILTER BAR */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.search-box{position:relative;flex:1;min-width:200px;}
+.search-box input{width:100%;padding:9px 14px 9px 36px;border-radius:var(--rs);border:1px solid var(--border);font-family:'Space Grotesk',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+.search-box input:focus{border-color:var(--blue);}
+.search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);}
+select.filter-sel{padding:9px 12px;border-radius:var(--rs);border:1px solid var(--border);font-family:'Space Grotesk',sans-serif;font-size:13px;outline:none;color:var(--text);background:white;cursor:pointer;}
+
+/* ATTENDANCE BAR */
+.att-bar-wrap{width:100px;height:8px;background:#E5E7EB;border-radius:4px;overflow:hidden;}
+.att-bar{height:100%;border-radius:4px;}
+
+/* FUNDS */
+.funds-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.fund-box{border-radius:var(--r);padding:20px 22px;border:1px solid var(--border);}
+.fund-box h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+.fund-amount{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+.fund-sub{font-size:12px;margin-top:4px;}
+
+/* PUSH NOTIF */
+.notif-form{display:flex;flex-direction:column;gap:14px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:5px;color:var(--text);}
+.form-group input,.form-group textarea,.form-group select{
+  width:100%;padding:10px 13px;border-radius:var(--rs);border:1.5px solid var(--border);
+  font-family:'Space Grotesk',sans-serif;font-size:13px;outline:none;transition:border-color .2s;resize:vertical;
+}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);}
+.notif-preview{background:var(--off);border-radius:var(--r);border:1px solid var(--border);padding:18px;margin-top:4px;}
+.notif-preview h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+.notif-preview p{font-size:12px;color:var(--muted);}
+
+/* CERT UPLOAD */
+.cert-upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:var(--off);}
+.cert-upload-zone:hover{border-color:var(--blue);background:var(--blue-light);}
+.cert-upload-zone h4{font-size:15px;font-weight:700;margin-bottom:6px;}
+.cert-upload-zone p{font-size:13px;color:var(--muted);}
+.cert-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
+.cert-preview-wrap{margin-top:18px;text-align:center;}
+canvas#adminCertCanvas{border-radius:10px;border:1px solid var(--border);max-width:100%;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:20px;max-width:520px;width:100%;padding:32px;position:relative;max-height:90vh;overflow-y:auto;}
+.modal-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:var(--off);cursor:pointer;font-size:16px;}
+.modal h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;}
+.modal .sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
+
+/* GOOGLE SHEETS */
+.sheets-link-bar{display:flex;gap:10px;align-items:center;background:var(--off);border-radius:var(--rs);padding:12px 16px;border:1px solid var(--border);}
+.sheets-link-bar input{flex:1;border:none;background:transparent;font-family:'Space Grotesk',sans-serif;font-size:13px;outline:none;color:var(--text);}
+.sheets-status{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;}
+.status-dot{width:8px;height:8px;border-radius:50%;}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:#0D1B2A;color:white;padding:14px 22px;border-radius:var(--r);font-size:14px;font-weight:600;z-index:9999;opacity:0;transform:translateY(16px);transition:all .3s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* PROGRESS BARS (attendance overview) */
+.att-overview-bars{display:flex;flex-direction:column;gap:12px;}
+.att-bar-row{display:flex;align-items:center;gap:12px;}
+.att-bar-label{font-size:13px;font-weight:600;width:130px;flex-shrink:0;}
+.att-bar-track{flex:1;height:10px;background:#E5E7EB;border-radius:5px;overflow:hidden;}
+.att-bar-fill{height:100%;border-radius:5px;transition:width .6s;}
+.att-bar-pct{font-size:13px;font-weight:700;width:40px;text-align:right;flex-shrink:0;}
+
+/* CHARTS */
+.mini-chart{display:flex;align-items:flex-end;gap:6px;height:80px;padding:8px 0;}
+.mini-bar{flex:1;border-radius:4px 4px 0 0;background:var(--blue);opacity:.7;transition:opacity .2s;cursor:pointer;position:relative;}
+.mini-bar:hover{opacity:1;}
+.mini-bar-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap;}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .funds-summary{grid-template-columns:1fr;}
+  .form-row,.cert-fields{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">NSS</div>
+    <h2>NSS GIOE</h2>
+    <p>Admin Dashboard</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" onclick="switchTab('dashboard',this)">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-section-label">Students</div>
+    <div class="nav-item" onclick="switchTab('students',this)">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Student Accounts
+    </div>
+    <div class="nav-item" onclick="switchTab('attendance',this)">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      Attendance
+    </div>
+    <div class="nav-section-label">Communication</div>
+    <div class="nav-item" onclick="switchTab('notifications',this)">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      Push Notifications
+    </div>
+    <div class="nav-section-label">Finance</div>
+    <div class="nav-item" onclick="switchTab('funds',this)">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Funds & Accounts
+    </div>
+    <div class="nav-section-label">Certificates</div>
+    <div class="nav-item" onclick="switchTab('certificates',this)">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+      Certificate Manager
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-chip">
+      <div class="admin-avatar">AD</div>
+      <div>
+        <h4>NSS Admin</h4>
+        <p>nss@admin</p>
+      </div>
+    </div>
+    <span class="logout-link" onclick="logout()">⏎ Logout</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="topbarTitle">Dashboard</h1>
+    <div class="topbar-right">
+      <span class="topbar-badge">3 New Notifications</span>
+      <span style="font-size:13px;color:var(--muted);">Academic Year 2024–25</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════ DASHBOARD ══════════ -->
+    <div class="tab-section active" id="tab-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div><div class="stat-label">Total Students</div><div class="stat-num" style="color:var(--blue)">118</div></div>
+            <div class="stat-icon" style="background:var(--blue-light);">👥</div>
+          </div>
+          <div class="stat-delta delta-up">↑ 12 joined this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div><div class="stat-label">Avg Attendance</div><div class="stat-num" style="color:var(--green)">74%</div></div>
+            <div class="stat-icon" style="background:var(--green-l);">📊</div>
+          </div>
+          <div class="stat-delta delta-up">↑ 6% from last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div><div class="stat-label">Events Done</div><div class="stat-num" style="color:var(--amber)">18</div></div>
+            <div class="stat-icon" style="background:var(--amber-l);">🎯</div>
+          </div>
+          <div class="stat-delta delta-up">↑ 3 this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div><div class="stat-label">Total Funds</div><div class="stat-num" style="color:var(--purple)">₹42K</div></div>
+            <div class="stat-icon" style="background:var(--purple-l);">💰</div>
+          </div>
+          <div class="stat-delta delta-down">↓ ₹8,200 spent this month</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <!-- ATTENDANCE OVERVIEW -->
+        <div class="card">
+          <div class="card-header"><h3>Attendance Overview</h3><span class="badge badge-blue">Last 6 months</span></div>
+          <div class="card-body">
+            <div style="margin-bottom:18px;">
+              <div class="mini-chart" id="miniChart"></div>
+              <div style="height:18px;"></div>
+            </div>
+            <div class="att-overview-bars">
+              <div class="att-bar-row"><span class="att-bar-label">Above 90%</span><div class="att-bar-track"><div class="att-bar-fill" style="width:22%;background:var(--green);"></div></div><span class="att-bar-pct" style="color:var(--green);">26</span></div>
+              <div class="att-bar-row"><span class="att-bar-label">75% – 90%</span><div class="att-bar-track"><div class="att-bar-fill" style="width:45%;background:var(--blue);"></div></div><span class="att-bar-pct" style="color:var(--blue);">53</span></div>
+              <div class="att-bar-row"><span class="att-bar-label">50% – 75%</span><div class="att-bar-track"><div class="att-bar-fill" style="width:27%;background:var(--amber);"></div></div><span class="att-bar-pct" style="color:var(--amber);">32</span></div>
+              <div class="att-bar-row"><span class="att-bar-label">Below 50%</span><div class="att-bar-track"><div class="att-bar-fill" style="width:6%;background:var(--red);"></div></div><span class="att-bar-pct" style="color:var(--red);">7</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="card">
+          <div class="card-header"><h3>Recent Activity</h3></div>
+          <div class="card-body" style="padding:0;">
+            <div style="padding:0 22px;">
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);">
+                <div style="width:36px;height:36px;border-radius:9px;background:var(--green-l);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🩸</div>
+                <div><div style="font-size:13px;font-weight:600;">Blood Donation Camp posted</div><div style="font-size:12px;color:var(--muted);">60 volunteers marked present</div></div>
+                <div style="margin-left:auto;font-size:11px;color:var(--muted);">Today</div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);">
+                <div style="width:36px;height:36px;border-radius:9px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📢</div>
+                <div><div style="font-size:13px;font-weight:600;">Notification pushed</div><div style="font-size:12px;color:var(--muted);">Annual Camp registration opened</div></div>
+                <div style="margin-left:auto;font-size:11px;color:var(--muted);">2d ago</div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);">
+                <div style="width:36px;height:36px;border-radius:9px;background:var(--purple-l);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🎓</div>
+                <div><div style="font-size:13px;font-weight:600;">12 certificates generated</div><div style="font-size:12px;color:var(--muted);">Tree Plantation Drive certs ready</div></div>
+                <div style="margin-left:auto;font-size:11px;color:var(--muted);">5d ago</div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 0;">
+                <div style="width:36px;height:36px;border-radius:9px;background:var(--amber-l);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">💰</div>
+                <div><div style="font-size:13px;font-weight:600;">Fund entry added</div><div style="font-size:12px;color:var(--muted);">₹5,000 received – District NSS Cell</div></div>
+                <div style="margin-left:auto;font-size:11px;color:var(--muted);">1w ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ STUDENTS ══════════ -->
+    <div class="tab-section" id="tab-students">
+      <div class="card">
+        <div class="card-header">
+          <h3>Student Accounts</h3>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-blue" onclick="openAddStudentModal()">+ Add Student</button>
+            <button class="btn btn-outline" onclick="exportCSV()">↓ Export CSV</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="toolbar" style="margin-bottom:16px;">
+            <div class="search-box">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input type="text" placeholder="Search by name, PIN, department..." oninput="filterStudents(this.value)" id="studentSearch"/>
+            </div>
+            <select class="filter-sel" onchange="filterStudentsByDept(this.value)">
+              <option value="">All Departments</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Computer">Computer</option>
+              <option value="Mechanical">Mechanical</option>
+              <option value="Civil">Civil</option>
+            </select>
+            <select class="filter-sel" onchange="filterStudentsByStatus(this.value)">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>PIN</th>
+                  <th>Department</th>
+                  <th>Year</th>
+                  <th>Attendance</th>
+                  <th>Hours</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTbody"></tbody>
+            </table>
+          </div>
+          <div style="padding:14px 0;font-size:13px;color:var(--muted);" id="studentCount"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ ATTENDANCE ══════════ -->
+    <div class="tab-section" id="tab-attendance">
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header"><h3>Google Sheets Attendance Sync</h3><span class="badge badge-green">Connected</span></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Link your Google Sheet where attendance is recorded. The admin can view and sync attendance from here.</p>
+          <div class="sheets-link-bar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#16A34A"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            <input type="text" value="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE" id="sheetsUrl" placeholder="Paste your Google Sheet URL here"/>
+            <button class="btn btn-green btn-sm" onclick="syncSheets()">Sync Now</button>
+          </div>
+          <div style="margin-top:12px;display:flex;align-items:center;gap:8px;" id="syncStatus">
+            <div class="status-dot" style="background:var(--green);"></div>
+            <span class="sheets-status" style="color:var(--green);">Last synced: Today, 10:32 AM</span>
+            <span style="font-size:12px;color:var(--muted);">— 118 records loaded</span>
+          </div>
+          <div style="margin-top:16px;padding:14px;background:var(--off);border-radius:var(--rs);border:1px solid var(--border);">
+            <p style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">📋 How to set up Google Sheets sync (Free):</p>
+            <ol style="font-size:12px;color:var(--muted);padding-left:18px;line-height:1.9;">
+              <li>Create a Google Sheet with columns: PIN, Name, Event, Date, Present (Yes/No)</li>
+              <li>Share the sheet → "Anyone with the link can view"</li>
+              <li>Paste the sheet URL above and click Sync</li>
+              <li>In production, use Google Sheets API with a free service account</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Attendance by Event</h3>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-blue" onclick="openAddEventModal()">+ Add Event</button>
+            <button class="btn btn-outline">↓ Export</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr><th>Event</th><th>Date</th><th>Category</th><th>Present</th><th>Absent</th><th>%</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="eventsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ NOTIFICATIONS ══════════ -->
+    <div class="tab-section" id="tab-notifications">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="card">
+          <div class="card-header"><h3>Push New Notification</h3></div>
+          <div class="card-body">
+            <div class="notif-form">
+              <div class="form-group">
+                <label>Notification Title *</label>
+                <input type="text" id="notifTitle" placeholder="e.g. Blood Donation Camp — This Saturday" oninput="updateNotifPreview()"/>
+              </div>
+              <div class="form-group">
+                <label>Message *</label>
+                <textarea id="notifMsg" rows="3" placeholder="Describe the event or announcement in detail..." oninput="updateNotifPreview()"></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Type</label>
+                  <select id="notifType" onchange="updateNotifPreview()">
+                    <option value="info">📢 Announcement</option>
+                    <option value="event">🎯 Event</option>
+                    <option value="urgent">🚨 Urgent</option>
+                    <option value="achievement">🏆 Achievement</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Send To</label>
+                  <select id="notifTarget">
+                    <option value="all">All Students + Homepage</option>
+                    <option value="students">Students Only</option>
+                    <option value="homepage">Homepage Only</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <p style="font-size:13px;font-weight:600;margin-bottom:8px;">Preview:</p>
+                <div class="notif-preview">
+                  <h4 id="previewTitle">Your notification title will appear here</h4>
+                  <p id="previewMsg">Your message will appear here...</p>
+                </div>
+              </div>
+              <button class="btn btn-blue" style="width:100%;justify-content:center;padding:13px;" onclick="pushNotification()">
+                📢 Post Notification to Website
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Posted Notifications</h3><span class="badge badge-blue" id="notifCountBadge">4 active</span></div>
+          <div class="card-body" style="padding:0;">
+            <div id="postedNotifsList" style="padding:0 22px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ FUNDS ══════════ -->
+    <div class="tab-section" id="tab-funds">
+      <div class="funds-summary">
+        <div class="fund-box" style="background:var(--green-l);border-color:#BBF7D0;">
+          <h4 style="color:var(--green);">Total Received</h4>
+          <div class="fund-amount" style="color:var(--green);">₹42,500</div>
+          <div class="fund-sub" style="color:#15803D;">From all sources</div>
+        </div>
+        <div class="fund-box" style="background:var(--red-l);border-color:#FECACA;">
+          <h4 style="color:var(--red);">Total Spent</h4>
+          <div class="fund-amount" style="color:var(--red);">₹28,350</div>
+          <div class="fund-sub" style="color:#B91C1C;">Across all events</div>
+        </div>
+        <div class="fund-box" style="background:var(--blue-light);border-color:#BFDBFE;">
+          <h4 style="color:var(--blue);">Balance</h4>
+          <div class="fund-amount" style="color:var(--blue);">₹14,150</div>
+          <div class="fund-sub" style="color:var(--blue-mid);">Available funds</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Fund Transactions</h3>
+          <button class="btn btn-blue" onclick="openAddFundModal()">+ Add Entry</button>
+        </div>
+        <div class="card-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr><th>Date</th><th>Description</th><th>Category</th><th>Type</th><th>Amount</th><th>Balance</th></tr>
+              </thead>
+              <tbody id="fundsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ CERTIFICATES ══════════ -->
+    <div class="tab-section" id="tab-certificates">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="card">
+          <div class="card-header"><h3>Certificate Generator</h3></div>
+          <div class="card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Enter student details to auto-generate their participation certificate. The name and PIN are automatically filled into the certificate design.</p>
+
+            <div class="cert-fields">
+              <div class="form-group">
+                <label>Student PIN *</label>
+                <input type="text" id="certPin" placeholder="NSS2024001" oninput="lookupStudent()"/>
+              </div>
+              <div class="form-group">
+                <label>Student Name</label>
+                <input type="text" id="certStuName" placeholder="Auto-filled from PIN"/>
+              </div>
+              <div class="form-group">
+                <label>Event Name *</label>
+                <input type="text" id="certEventName" placeholder="e.g. Tree Plantation Drive" oninput="renderAdminCert()"/>
+              </div>
+              <div class="form-group">
+                <label>Event Date</label>
+                <input type="date" id="certDate" oninput="renderAdminCert()"/>
+              </div>
+              <div class="form-group">
+                <label>Service Hours</label>
+                <input type="number" id="certHours" placeholder="6" min="1" oninput="renderAdminCert()"/>
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <input type="text" id="certCategory" placeholder="Environment, Health..." oninput="renderAdminCert()"/>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;display:flex;gap:10px;">
+              <button class="btn btn-blue" style="flex:1;justify-content:center;" onclick="renderAdminCert()">Generate Preview</button>
+              <button class="btn btn-green" style="flex:1;justify-content:center;" onclick="downloadAdminCert()">↓ Download PNG</button>
+            </div>
+
+            <div style="margin-top:16px;padding:14px;background:var(--off);border-radius:var(--rs);border:1px solid var(--border);">
+              <p style="font-size:12px;font-weight:700;margin-bottom:6px;">Bulk Generate</p>
+              <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Upload a CSV with columns: PIN, Name, Event, Date, Hours to generate certificates for all students at once.</p>
+              <input type="file" accept=".csv" onchange="bulkCertUpload(this)" style="font-size:12px;"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Certificate Preview</h3></div>
+          <div class="card-body" style="background:var(--off);min-height:400px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+            <canvas id="adminCertCanvas" width="520" height="368"></canvas>
+            <p style="font-size:12px;color:var(--muted);">Fill the form and click Generate Preview</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ADD STUDENT MODAL -->
+<div class="modal-overlay" id="addStudentModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addStudentModal')">✕</button>
+    <h2>Add New Student</h2>
+    <p class="sub">Create a new NSS volunteer account. Credentials will be shared with the student.</p>
+    <div class="form-row">
+      <div class="form-group"><label>Full Name *</label><input type="text" id="newName" placeholder="e.g. Priya Sharma"/></div>
+      <div class="form-group"><label>PIN *</label><input type="text" id="newPin" placeholder="NSS2024___"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Department *</label>
+        <select id="newDept"><option>Electronics</option><option>Computer</option><option>Mechanical</option><option>Civil</option></select>
+      </div>
+      <div class="form-group"><label>Year</label>
+        <select id="newYear"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Username (auto)</label><input type="text" id="newUsername" placeholder="Auto-generated" readonly style="background:var(--off);"/></div>
+      <div class="form-group"><label>Password (auto)</label><input type="text" id="newPassword" placeholder="Auto-generated" readonly style="background:var(--off);"/></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);padding:10px;background:var(--off);border-radius:var(--rs);margin-bottom:16px;">
+      📋 Username: <b id="credUser">—</b> &nbsp;|&nbsp; Password: <b id="credPass">—</b>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-blue" style="flex:1;justify-content:center;" onclick="addStudent()">Add Student</button>
+      <button class="btn btn-outline" onclick="closeModal('addStudentModal')">Cancel</button>
+    </div>
+    <script>
+      document.getElementById('newPin').addEventListener('input', function(){
+        const pin = this.value.toLowerCase().replace(/[^a-z0-9]/g,'_');
+        const user = pin + '@nss';
+        const pass = pin + '_nss_001';
+        document.getElementById('newUsername').value = user;
+        document.getElementById('newPassword').value = pass;
+        document.getElementById('credUser').textContent = user;
+        document.getElementById('credPass').textContent = pass;
+      });
+    </script>
+  </div>
+</div>
+
+<!-- ADD FUND MODAL -->
+<div class="modal-overlay" id="addFundModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addFundModal')">✕</button>
+    <h2>Add Fund Entry</h2>
+    <p class="sub">Record an income or expense for your NSS unit.</p>
+    <div class="form-group"><label>Type *</label>
+      <select id="fundType">
+        <option value="income">💰 Income (Received)</option>
+        <option value="expense">💸 Expense (Spent)</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Description *</label><input type="text" id="fundDesc" placeholder="e.g. District NSS Cell Grant"/></div>
+    <div class="form-row">
+      <div class="form-group"><label>Amount (₹) *</label><input type="number" id="fundAmount" placeholder="5000" min="1"/></div>
+      <div class="form-group"><label>Date *</label><input type="date" id="fundDate"/></div>
+    </div>
+    <div class="form-group"><label>Category</label>
+      <select id="fundCat">
+        <option>Government Grant</option><option>Event Expense</option>
+        <option>Materials</option><option>Travel</option><option>Miscellaneous</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn btn-blue" style="flex:1;justify-content:center;" onclick="addFundEntry()">Save Entry</button>
+      <button class="btn btn-outline" onclick="closeModal('addFundModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD EVENT MODAL -->
+<div class="modal-overlay" id="addEventModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addEventModal')">✕</button>
+    <h2>Add NSS Event</h2>
+    <p class="sub">Record a new NSS activity. Attendance will be synced from Google Sheets.</p>
+    <div class="form-group"><label>Event Name *</label><input type="text" id="evName" placeholder="e.g. Tree Plantation Drive"/></div>
+    <div class="form-row">
+      <div class="form-group"><label>Date *</label><input type="date" id="evDate"/></div>
+      <div class="form-group"><label>Hours</label><input type="number" id="evHours" placeholder="6" min="1"/></div>
+    </div>
+    <div class="form-group"><label>Category</label>
+      <select id="evCat"><option>Environment</option><option>Health</option><option>Education</option><option>Civic</option><option>Cleanliness</option><option>Cultural</option><option>Camp</option></select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn btn-blue" style="flex:1;justify-content:center;" onclick="addEvent()">Add Event</button>
+      <button class="btn btn-outline" onclick="closeModal('addEventModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────── DATA ───────────────────
+let students = [
+  {id:1,name:'Rahul Kumar',pin:'NSS2024001',dept:'Electronics',year:'2nd Year',att:78,hours:145,status:'active'},
+  {id:2,name:'Priya Sharma',pin:'NSS2024002',dept:'Computer',year:'2nd Year',att:92,hours:180,status:'active'},
+  {id:3,name:'Mohammed Arif',pin:'NSS2024003',dept:'Electronics',year:'1st Year',att:65,hours:122,status:'active'},
+  {id:4,name:'Sneha Reddy',pin:'NSS2024004',dept:'Civil',year:'3rd Year',att:88,hours:160,status:'active'},
+  {id:5,name:'Kiran Babu',pin:'NSS2024005',dept:'Mechanical',year:'2nd Year',att:45,hours:90,status:'inactive'},
+  {id:6,name:'Divya Nair',pin:'NSS2024006',dept:'Computer',year:'1st Year',att:95,hours:195,status:'active'},
+  {id:7,name:'Arun Teja',pin:'NSS2024007',dept:'Electronics',year:'3rd Year',att:72,hours:138,status:'active'},
+  {id:8,name:'Fatima Begum',pin:'NSS2024008',dept:'Civil',year:'2nd Year',att:83,hours:156,status:'active'},
+  {id:9,name:'Sai Charan',pin:'NSS2024009',dept:'Mechanical',year:'1st Year',att:58,hours:108,status:'active'},
+  {id:10,name:'Lakshmi Prasad',pin:'NSS2024010',dept:'Computer',year:'3rd Year',att:91,hours:178,status:'active'},
+];
+
+let events = [
+  {id:1,name:'Tree Plantation Drive',date:'Oct 12, 2024',cat:'Environment',present:94,total:118},
+  {id:2,name:'Blood Donation Camp',date:'Nov 08, 2024',cat:'Health',present:82,total:118},
+  {id:3,name:'Swachh Bharat Abhiyan',date:'Sep 24, 2024',cat:'Cleanliness',present:108,total:118},
+  {id:4,name:'Literacy & Awareness Camp',date:'Aug 15, 2024',cat:'Education',present:76,total:118},
+  {id:5,name:'Voter Awareness Drive',date:'Jul 20, 2024',cat:'Civic',present:99,total:118},
+];
+
+let funds = [
+  {id:1,date:'Nov 15, 2024',desc:'District NSS Cell Grant',cat:'Government Grant',type:'income',amount:15000,balance:42500},
+  {id:2,date:'Nov 08, 2024',desc:'Blood Donation Camp – Materials',cat:'Event Expense',type:'expense',amount:3500,balance:27500},
+  {id:3,date:'Oct 20, 2024',desc:'Tree Plantation – Saplings',cat:'Materials',type:'expense',amount:4800,balance:31000},
+  {id:4,date:'Oct 01, 2024',desc:'State NSS Cell Allocation',cat:'Government Grant',type:'income',amount:20000,balance:35800},
+  {id:5,date:'Sep 24, 2024',desc:'Swachh Bharat – Cleaning supplies',cat:'Event Expense',type:'expense',amount:2200,balance:15800},
+  {id:6,date:'Sep 01, 2024',desc:'College NSS Initial Fund',cat:'Government Grant',type:'income',amount:7500,balance:18000},
+  {id:7,date:'Aug 15, 2024',desc:'Awareness camp – Stationery',cat:'Materials',type:'expense',amount:1800,balance:10500},
+  {id:8,date:'Jul 20, 2024',desc:'Voter Drive – Printing',cat:'Event Expense',type:'expense',amount:1200,balance:12300},
+  {id:9,date:'Jun 10, 2024',desc:'Health Camp – Medical supplies',cat:'Event Expense',type:'expense',amount:2850,balance:13500},
+  {id:10,date:'May 01, 2024',desc:'Opening balance',cat:'Miscellaneous',type:'income',amount:16350,balance:16350},
+];
+
+let postedNotifs = [
+  {id:1,title:'Annual NSS Camp Registration Open',msg:'7-day residential camp in March 2025.',type:'event',time:'Today'},
+  {id:2,title:'Blood Donation Drive – This Saturday',msg:'Apollo Hospitals collaboration on campus.',type:'urgent',time:'2 days ago'},
+  {id:3,title:'Swachh Bharat Activity Report',msg:'Report published and available to download.',type:'info',time:'1 week ago'},
+  {id:4,title:'Volunteer of the Month – December',msg:'Congratulations to our top performers!',type:'achievement',time:'2 weeks ago'},
+];
+
+let filterQuery = '';
+let filterDept = '';
+let filterStatus = '';
+
+// ─────────────────── INIT ───────────────────
+renderMiniChart();
+renderStudents();
+renderEvents();
+renderFunds();
+renderPostedNotifs();
+drawBlankCert();
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  el.classList.add('active');
+  const titles = {dashboard:'Dashboard',students:'Student Accounts',attendance:'Attendance',notifications:'Push Notifications',funds:'Funds & Accounts',certificates:'Certificate Manager'};
+  document.getElementById('topbarTitle').textContent = titles[tab];
+}
+
+// ─────────────────── MINI CHART ───────────────────
+function renderMiniChart() {
+  const data = [62,68,71,74,73,74];
+  const months = ['Jun','Jul','Aug','Sep','Oct','Nov'];
+  const max = 100;
+  const chart = document.getElementById('miniChart');
+  chart.innerHTML = data.map((v,i) => `
+    <div class="mini-bar" style="height:${v}%;background:var(--blue);" title="${months[i]}: ${v}%">
+      <span class="mini-bar-label">${months[i]}</span>
+    </div>
+  `).join('');
+}
+
+// ─────────────────── STUDENTS ───────────────────
+function renderStudents() {
+  let filtered = students.filter(s => {
+    const q = filterQuery.toLowerCase();
+    const matchQ = !q || s.name.toLowerCase().includes(q) || s.pin.toLowerCase().includes(q) || s.dept.toLowerCase().includes(q);
+    const matchD = !filterDept || s.dept === filterDept;
+    const matchS = !filterStatus || s.status === filterStatus;
+    return matchQ && matchD && matchS;
+  });
+  const tbody = document.getElementById('studentsTbody');
+  tbody.innerHTML = filtered.map(s => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue);flex-shrink:0;">
+            ${s.name.split(' ').map(w=>w[0]).join('')}
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:13px;">${s.name}</div>
+            <div style="font-size:11px;color:var(--muted);">${s.pin}</div>
+          </div>
+        </div>
+      </td>
+      <td><code style="font-size:12px;background:var(--off);padding:2px 7px;border-radius:4px;">${s.pin}</code></td>
+      <td>${s.dept}</td>
+      <td>${s.year}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="att-bar-wrap"><div class="att-bar" style="width:${s.att}%;background:${s.att>=75?'var(--green)':s.att>=50?'var(--amber)':'var(--red)'};"></div></div>
+          <span style="font-size:12px;font-weight:700;color:${s.att>=75?'var(--green)':s.att>=50?'var(--amber)':'var(--red)'};">${s.att}%</span>
+        </div>
+      </td>
+      <td><span class="badge badge-blue">${s.hours}h</span></td>
+      <td><span class="badge ${s.status==='active'?'badge-green':'badge-red'}">${s.status==='active'?'Active':'Inactive'}</span></td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="viewCreds(${s.id})">Creds</button>
+          <button class="btn btn-red btn-sm" onclick="removeStudent(${s.id})">Remove</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  document.getElementById('studentCount').textContent = `Showing ${filtered.length} of ${students.length} students`;
+}
+
+function filterStudents(q) { filterQuery = q; renderStudents(); }
+function filterStudentsByDept(d) { filterDept = d; renderStudents(); }
+function filterStudentsByStatus(s) { filterStatus = s; renderStudents(); }
+
+function openAddStudentModal() { document.getElementById('addStudentModal').classList.add('open'); }
+function addStudent() {
+  const name = document.getElementById('newName').value.trim();
+  const pin = document.getElementById('newPin').value.trim();
+  const dept = document.getElementById('newDept').value;
+  const year = document.getElementById('newYear').value;
+  if (!name || !pin) { toast('⚠️ Name and PIN are required'); return; }
+  students.push({id: students.length+1, name, pin, dept, year, att:0, hours:0, status:'active'});
+  renderStudents();
+  closeModal('addStudentModal');
+  toast('✅ Student ' + name + ' added successfully!');
+}
+
+function removeStudent(id) {
+  if (!confirm('Remove this student?')) return;
+  students = students.filter(s => s.id !== id);
+  renderStudents();
+  toast('🗑️ Student removed');
+}
+
+function viewCreds(id) {
+  const s = students.find(s => s.id === id);
+  const pin = s.pin.toLowerCase().replace(/[^a-z0-9]/g,'_');
+  alert(`Credentials for ${s.name}:\n\nUsername: ${pin}@nss\nPassword: ${pin}_nss_001\n\nShare these with the student.`);
+}
+
+function exportCSV() {
+  const rows = [['Name','PIN','Department','Year','Attendance%','Hours','Status']];
+  students.forEach(s => rows.push([s.name,s.pin,s.dept,s.year,s.att,s.hours,s.status]));
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a'); a.download = 'NSS_GIOE_Students.csv';
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.click();
+  toast('📥 CSV exported!');
+}
+
+// ─────────────────── EVENTS ───────────────────
+function renderEvents() {
+  const tbody = document.getElementById('eventsTbody');
+  tbody.innerHTML = events.map(e => {
+    const pct = Math.round(e.present/e.total*100);
+    return `<tr>
+      <td style="font-weight:600;">${e.name}</td>
+      <td>${e.date}</td>
+      <td><span class="badge badge-blue">${e.cat}</span></td>
+      <td style="color:var(--green);font-weight:700;">${e.present}</td>
+      <td style="color:var(--red);font-weight:700;">${e.total - e.present}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="att-bar-wrap"><div class="att-bar" style="width:${pct}%;background:${pct>=75?'var(--green)':pct>=50?'var(--amber)':'var(--red)'};"></div></div>
+          <span style="font-size:12px;font-weight:700;">${pct}%</span>
+        </div>
+      </td>
+      <td><button class="btn btn-outline btn-sm" onclick="toast('Attendance sheet for this event will open from Google Sheets')">View Sheet</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function openAddEventModal() { document.getElementById('addEventModal').classList.add('open'); }
+function addEvent() {
+  const name = document.getElementById('evName').value.trim();
+  const date = document.getElementById('evDate').value;
+  const cat = document.getElementById('evCat').value;
+  if (!name) { toast('⚠️ Event name required'); return; }
+  events.push({id:events.length+1, name, date: date || 'TBD', cat, present:0, total:students.length});
+  renderEvents();
+  closeModal('addEventModal');
+  toast('✅ Event "' + name + '" added!');
+}
+
+function syncSheets() {
+  toast('🔄 Syncing with Google Sheets...');
+  setTimeout(() => toast('✅ Attendance synced — 118 records updated!'), 1800);
+}
+
+// ─────────────────── FUNDS ───────────────────
+function renderFunds() {
+  const tbody = document.getElementById('fundsTbody');
+  tbody.innerHTML = funds.map(f => `
+    <tr>
+      <td>${f.date}</td>
+      <td style="font-weight:600;">${f.desc}</td>
+      <td><span class="badge ${f.cat.includes('Grant')?'badge-green':'badge-amber'}">${f.cat}</span></td>
+      <td><span class="badge ${f.type==='income'?'badge-green':'badge-red'}">${f.type==='income'?'↑ Income':'↓ Expense'}</span></td>
+      <td style="font-weight:700;color:${f.type==='income'?'var(--green)':'var(--red)'};">${f.type==='income'?'+':'-'}₹${f.amount.toLocaleString()}</td>
+      <td style="font-weight:600;">₹${f.balance.toLocaleString()}</td>
+    </tr>
+  `).join('');
+}
+
+function openAddFundModal() {
+  document.getElementById('fundDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('addFundModal').classList.add('open');
+}
+
+function addFundEntry() {
+  const type = document.getElementById('fundType').value;
+  const desc = document.getElementById('fundDesc').value.trim();
+  const amount = parseInt(document.getElementById('fundAmount').value);
+  const date = document.getElementById('fundDate').value;
+  const cat = document.getElementById('fundCat').value;
+  if (!desc || !amount) { toast('⚠️ Fill required fields'); return; }
+  const lastBal = funds[0]?.balance || 0;
+  const newBal = type==='income' ? lastBal + amount : lastBal - amount;
+  funds.unshift({id:funds.length+1, date: date||'Today', desc, cat, type, amount, balance: newBal});
+  renderFunds();
+  closeModal('addFundModal');
+  toast('✅ Fund entry saved!');
+}
+
+// ─────────────────── NOTIFICATIONS ───────────────────
+function updateNotifPreview() {
+  const t = document.getElementById('notifTitle').value || 'Your notification title';
+  const m = document.getElementById('notifMsg').value || 'Your message will appear here...';
+  const type = document.getElementById('notifType').value;
+  const icons = {info:'📢',event:'🎯',urgent:'🚨',achievement:'🏆'};
+  document.getElementById('previewTitle').textContent = icons[type] + ' ' + t;
+  document.getElementById('previewMsg').textContent = m;
+}
+
+function pushNotification() {
+  const title = document.getElementById('notifTitle').value.trim();
+  const msg = document.getElementById('notifMsg').value.trim();
+  const type = document.getElementById('notifType').value;
+  if (!title || !msg) { toast('⚠️ Title and message are required'); return; }
+  postedNotifs.unshift({id:postedNotifs.length+1, title, msg, type, time:'Just now'});
+  renderPostedNotifs();
+  document.getElementById('notifTitle').value = '';
+  document.getElementById('notifMsg').value = '';
+  updateNotifPreview();
+  toast('📢 Notification posted to website!');
+}
+
+function renderPostedNotifs() {
+  const icons = {info:'📢',event:'🎯',urgent:'🚨',achievement:'🏆'};
+  const colors = {info:'badge-blue',event:'badge-green',urgent:'badge-red',achievement:'badge-purple'};
+  const list = document.getElementById('postedNotifsList');
+  list.innerHTML = postedNotifs.map(n => `
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);">
+      <div style="font-size:18px;flex-shrink:0;">${icons[n.type]||'📢'}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:2px;">${n.title}</div>
+        <div style="font-size:12px;color:var(--muted);">${n.msg}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        <span style="font-size:10px;color:var(--muted);">${n.time}</span>
+        <button class="btn btn-red btn-sm" onclick="deleteNotif(${n.id})">Delete</button>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('notifCountBadge').textContent = postedNotifs.length + ' active';
+}
+
+function deleteNotif(id) {
+  postedNotifs = postedNotifs.filter(n => n.id !== id);
+  renderPostedNotifs();
+  toast('🗑️ Notification removed');
+}
+
+// ─────────────────── CERTIFICATES ───────────────────
+const STUDENT_DB = {
+  'NSS2024001':{name:'Rahul Kumar'},
+  'NSS2024002':{name:'Priya Sharma'},
+  'NSS2024003':{name:'Mohammed Arif'},
+  'NSS2024004':{name:'Sneha Reddy'},
+  'NSS2024005':{name:'Kiran Babu'},
+};
+
+function lookupStudent() {
+  const pin = document.getElementById('certPin').value.trim().toUpperCase();
+  const s = STUDENT_DB[pin];
+  if (s) {
+    document.getElementById('certStuName').value = s.name;
+    renderAdminCert();
+  } else {
+    document.getElementById('certStuName').value = '';
+  }
+}
+
+function drawBlankCert() {
+  const canvas = document.getElementById('adminCertCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#F5F7FA';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#9CA3AF';
+  ctx.font = '14px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Certificate preview will appear here', canvas.width/2, canvas.height/2);
+}
+
+function renderAdminCert() {
+  const name = document.getElementById('certStuName').value || 'Student Name';
+  const pin = document.getElementById('certPin').value || 'NSS2024XXX';
+  const eventName = document.getElementById('certEventName').value || 'NSS Event';
+  const dateVal = document.getElementById('certDate').value;
+  const date = dateVal ? new Date(dateVal).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : 'Date';
+  const hours = document.getElementById('certHours').value || '0';
+
+  const canvas = document.getElementById('adminCertCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = '#1565C0'; ctx.lineWidth = 7; ctx.strokeRect(9,9,W-18,H-18);
+  ctx.strokeStyle = '#FFD600'; ctx.lineWidth = 2; ctx.strokeRect(18,18,W-36,H-36);
+  ctx.fillStyle = '#0D47A1'; ctx.fillRect(9,9,W-18,63);
+  ctx.fillStyle = '#FFFFFF'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center';
+  ctx.fillText('NATIONAL SERVICE SCHEME', W/2, 37);
+  ctx.fillStyle = '#FFD600'; ctx.font = '12px Arial';
+  ctx.fillText('Government Institute of Electronics, Hyderabad', W/2, 57);
+  ctx.fillStyle = '#1565C0'; ctx.font = 'bold 22px Arial';
+  ctx.fillText('CERTIFICATE OF PARTICIPATION', W/2, 114);
+  ctx.fillStyle = '#FFD600'; ctx.fillRect(W/2-160,121,320,3);
+  ctx.fillStyle = '#4A5568'; ctx.font = '13px Arial'; ctx.fillText('This is to certify that', W/2, 158);
+  ctx.fillStyle = '#0D47A1'; ctx.font = 'bold 22px Arial'; ctx.fillText(name, W/2, 192);
+  ctx.fillStyle = '#4A5568'; ctx.font = '11px Arial'; ctx.fillText('PIN: ' + pin.toUpperCase(), W/2, 210);
+  ctx.fillStyle = '#4A5568'; ctx.font = '12px Arial';
+  ctx.fillText('has successfully participated in', W/2, 240);
+  ctx.fillStyle = '#0D47A1'; ctx.font = 'bold 15px Arial'; ctx.fillText(eventName, W/2, 265);
+  ctx.fillStyle = '#4A5568'; ctx.font = '11px Arial';
+  ctx.fillText('Date: ' + date + '   |   Service Hours: ' + hours + ' hrs', W/2, 288);
+  ctx.strokeStyle = '#D0DCF0'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(36,338); ctx.lineTo(168,338); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W-168,338); ctx.lineTo(W-36,338); ctx.stroke();
+  ctx.fillStyle = '#0D47A1'; ctx.font = 'bold 12px Arial'; ctx.textAlign = 'left';
+  ctx.fillText('Programme Officer', 36, 352);
+  ctx.textAlign = 'right';
+  ctx.fillText('NSS Unit, GIOE', W-36, 352);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#9CA3AF'; ctx.font = '10px Arial';
+  ctx.fillText('NSS GIOE Hyderabad  |  nss@gioe.ac.in  |  Batch 2024–25', W/2, 364);
+}
+
+function downloadAdminCert() {
+  renderAdminCert();
+  const name = document.getElementById('certStuName').value || 'student';
+  const pin = document.getElementById('certPin').value || 'unknown';
+  const canvas = document.getElementById('adminCertCanvas');
+  const a = document.createElement('a');
+  a.download = 'NSS_Cert_' + pin + '_' + name.replace(/\s/g,'_') + '.png';
+  a.href = canvas.toDataURL('image/png'); a.click();
+  toast('✅ Certificate downloaded!');
+}
+
+function bulkCertUpload(input) {
+  const file = input.files[0]; if (!file) return;
+  toast('📋 CSV uploaded — bulk generation would process here in production with Firebase');
+}
+
+// ─────────────────── UTILS ───────────────────
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function logout() {
+  if (confirm('Logout from admin panel?')) window.location.href = 'nss_gioe_homepage.html';
+}
+</script>
+</body>
+</html>

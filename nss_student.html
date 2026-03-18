@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Student Profile | NSS GIOE</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --blue: #1565C0;
+  --blue-dark: #0D47A1;
+  --blue-light: #E3F2FD;
+  --blue-mid: #1976D2;
+  --accent: #FFD600;
+  --white: #ffffff;
+  --off-white: #F5F7FA;
+  --text: #0D1B2A;
+  --text-muted: #4A5568;
+  --border: #D0DCF0;
+  --green: #16A34A;
+  --green-light: #DCFCE7;
+  --red: #DC2626;
+  --red-light: #FEE2E2;
+  --amber: #D97706;
+  --amber-light: #FEF3C7;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Space Grotesk', sans-serif; color: var(--text); background: var(--off-white); min-height: 100vh; }
+
+/* NAV */
+nav {
+  background: white; border-bottom: 1px solid var(--border);
+  padding: 0 5%; display: flex; align-items: center; justify-content: space-between; height: 64px;
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-logo-icon { width: 38px; height: 38px; border-radius: 9px; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; }
+.nav-logo-text { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--blue-dark); }
+.nav-right { display: flex; align-items: center; gap: 14px; }
+.nav-notif-btn {
+  position: relative; width: 38px; height: 38px; border-radius: 9px;
+  border: 1px solid var(--border); background: white; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.notif-badge {
+  position: absolute; top: -4px; right: -4px; width: 16px; height: 16px;
+  background: var(--red); color: white; border-radius: 50%; font-size: 9px;
+  font-weight: 700; display: flex; align-items: center; justify-content: center;
+}
+.logout-btn {
+  padding: 8px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: white; font-family: 'Space Grotesk', sans-serif; font-size: 13px;
+  font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all .2s;
+}
+.logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* LAYOUT */
+.page { max-width: 1100px; margin: 0 auto; padding: 32px 5%; }
+
+/* PROFILE HEADER */
+.profile-header {
+  background: linear-gradient(135deg, #0D47A1 0%, #1976D2 100%);
+  border-radius: 20px; padding: 36px 40px; color: white;
+  display: flex; align-items: center; gap: 32px; margin-bottom: 24px; position: relative; overflow: hidden;
+}
+.profile-header::after {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.05);
+}
+.avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(255,255,255,0.2); border: 3px solid rgba(255,255,255,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800;
+  flex-shrink: 0; position: relative; z-index: 1;
+}
+.profile-info { flex: 1; position: relative; z-index: 1; }
+.profile-info h1 { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.profile-info p { font-size: 14px; opacity: .75; margin-bottom: 10px; }
+.profile-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.profile-tag {
+  display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 100px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+}
+.profile-tag.gold { background: rgba(255,214,0,0.2); border-color: rgba(255,214,0,0.4); color: var(--accent); }
+
+/* STAT CARDS */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card {
+  background: white; border-radius: var(--radius); border: 1px solid var(--border);
+  padding: 22px 20px; text-align: center;
+}
+.stat-num { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+.stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+
+/* ATTENDANCE RING */
+.attendance-section { display: grid; grid-template-columns: 280px 1fr; gap: 20px; margin-bottom: 24px; }
+.attend-card {
+  background: white; border-radius: var(--radius); border: 1px solid var(--border);
+  padding: 28px 24px; display: flex; flex-direction: column; align-items: center;
+}
+.attend-card h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: 24px; align-self: flex-start; }
+.ring-wrap { position: relative; width: 160px; height: 160px; margin-bottom: 20px; }
+.ring-wrap svg { transform: rotate(-90deg); }
+.ring-center {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+}
+.ring-pct { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--blue); }
+.ring-sub { font-size: 11px; color: var(--text-muted); }
+.attend-breakdown { width: 100%; }
+.attend-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.attend-row:last-child { border-bottom: none; }
+.attend-row span:first-child { color: var(--text-muted); }
+.attend-row span:last-child { font-weight: 600; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; }
+.badge.green { background: var(--green-light); color: var(--green); }
+.badge.amber { background: var(--amber-light); color: var(--amber); }
+.badge.red { background: var(--red-light); color: var(--red); }
+
+/* NOTIF PANEL */
+.notif-panel {
+  background: white; border-radius: var(--radius); border: 1px solid var(--border);
+  padding: 24px; overflow-y: auto; max-height: 320px;
+}
+.notif-panel h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: 16px; }
+.notif-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.notif-item:last-child { border-bottom: none; }
+.notif-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.notif-dot.blue { background: var(--blue); }
+.notif-dot.green { background: var(--green); }
+.notif-dot.amber { background: var(--amber); }
+.notif-item-text h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.notif-item-text p { font-size: 12px; color: var(--text-muted); }
+.notif-time { margin-left: auto; font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+/* EVENTS TABLE */
+.events-section { background: white; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 24px; overflow: hidden; }
+.events-header { padding: 22px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.events-header h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
+.events-filter { display: flex; gap: 8px; }
+.filter-btn {
+  padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); background: white; cursor: pointer; transition: all .2s;
+}
+.filter-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+table { width: 100%; border-collapse: collapse; }
+thead th { padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); background: var(--off-white); border-bottom: 1px solid var(--border); }
+tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--off-white); }
+tbody td { padding: 14px 20px; font-size: 13px; vertical-align: middle; }
+.event-name { font-weight: 600; font-size: 14px; }
+.event-cat { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.hours-pill { display: inline-block; padding: 3px 10px; border-radius: 100px; background: var(--blue-light); color: var(--blue); font-size: 12px; font-weight: 700; }
+.cert-dl-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  background: var(--blue); color: white; border: none; cursor: pointer;
+  font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 600;
+  transition: background .2s; text-decoration: none;
+}
+.cert-dl-btn:hover { background: var(--blue-dark); }
+.cert-dl-btn svg { flex-shrink: 0; }
+.absent-row td { opacity: .6; }
+
+/* GALLERY SECTION */
+.gallery-section { background: white; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 24px; overflow: hidden; }
+.gallery-header { padding: 22px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.gallery-header h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
+.gallery-tabs { display: flex; gap: 8px; }
+.gallery-tab { padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); background: white; cursor: pointer; transition: all .2s; }
+.gallery-tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+.gallery-body { padding: 24px; }
+.gallery-event-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: 12px; margin-top: 20px; }
+.gallery-event-label:first-child { margin-top: 0; }
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.photo-item {
+  aspect-ratio: 4/3; border-radius: var(--radius-sm); overflow: hidden;
+  display: flex; align-items: center; justify-content: center; font-size: 28px;
+  cursor: pointer; position: relative; transition: transform .2s;
+}
+.photo-item:hover { transform: scale(1.03); }
+.photo-item::after {
+  content: '🔍'; position: absolute; inset: 0; background: rgba(13,71,161,0.6);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s; border-radius: var(--radius-sm);
+  font-size: 20px;
+}
+.photo-item:hover::after { opacity: 1; }
+
+/* LIGHTBOX */
+.lightbox {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+}
+.lightbox.open { display: flex; }
+.lightbox-inner { background: white; border-radius: 20px; padding: 32px; max-width: 520px; width: 100%; text-align: center; }
+.lightbox-emoji { font-size: 72px; margin-bottom: 16px; }
+.lightbox-inner h3 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.lightbox-inner p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+.lightbox-close { padding: 10px 24px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: white; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+/* CERT MODAL */
+.cert-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+.cert-modal.open { display: flex; }
+.cert-modal-inner { background: white; border-radius: 20px; max-width: 640px; width: 100%; overflow: hidden; }
+.cert-modal-header { background: var(--blue-dark); color: white; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; }
+.cert-modal-header h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
+.cert-modal-close { background: rgba(255,255,255,0.15); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+.cert-canvas-wrap { padding: 24px; background: var(--off-white); display: flex; flex-direction: column; align-items: center; gap: 16px; }
+canvas#certCanvas { border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,0.15); max-width: 100%; }
+.cert-dl-full { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: var(--radius-sm); background: var(--blue); color: white; border: none; cursor: pointer; font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; transition: background .2s; }
+.cert-dl-full:hover { background: var(--blue-dark); }
+
+@media (max-width: 900px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .attendance-section { grid-template-columns: 1fr; }
+  table { font-size: 12px; }
+  .profile-header { flex-direction: column; text-align: center; gap: 16px; }
+  .profile-tags { justify-content: center; }
+}
+@media (max-width: 600px) {
+  .page { padding: 20px 4%; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  thead th:nth-child(3), tbody td:nth-child(3) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="nss_gioe_homepage.html">
+    <div class="nav-logo-icon">NSS</div>
+    <div class="nav-logo-text">NSS GIOE</div>
+  </a>
+  <div class="nav-right">
+    <button class="nav-notif-btn" onclick="scrollToNotif()">
+      🔔
+      <span class="notif-badge">3</span>
+    </button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="avatar" id="avatarEl">RK</div>
+    <div class="profile-info">
+      <h1 id="studentName">Rahul Kumar</h1>
+      <p id="studentMeta">NSS Volunteer &bull; PIN: NSS2024001 &bull; Batch 2024–25</p>
+      <div class="profile-tags">
+        <span class="profile-tag">GIOE Hyderabad</span>
+        <span class="profile-tag">Electronics Dept.</span>
+        <span class="profile-tag gold">⭐ Active Volunteer</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" style="color: var(--blue);" id="statPct">78%</div>
+      <div class="stat-label">Attendance</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color: var(--green);" id="statEvents">12</div>
+      <div class="stat-label">Events Attended</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color: var(--amber);" id="statHours">145</div>
+      <div class="stat-label">Service Hours</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color: #7C3AED;" id="statCerts">12</div>
+      <div class="stat-label">Certificates</div>
+    </div>
+  </div>
+
+  <!-- ATTENDANCE + NOTIFICATIONS -->
+  <div class="attendance-section">
+    <div class="attend-card">
+      <h3>Attendance</h3>
+      <div class="ring-wrap">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="64" fill="none" stroke="#E3F2FD" stroke-width="16"/>
+          <circle cx="80" cy="80" r="64" fill="none" stroke="#1565C0" stroke-width="16"
+            stroke-dasharray="402.1" stroke-dashoffset="88.5" stroke-linecap="round"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-pct">78%</div>
+          <div class="ring-sub">Overall</div>
+        </div>
+      </div>
+      <div class="attend-breakdown">
+        <div class="attend-row"><span>Total Events</span><span>18</span></div>
+        <div class="attend-row"><span>Attended</span><span style="color:var(--green); font-weight:700;">14</span></div>
+        <div class="attend-row"><span>Absent</span><span style="color:var(--red); font-weight:700;">4</span></div>
+        <div class="attend-row"><span>Service Hours</span><span>145 hrs</span></div>
+        <div class="attend-row"><span>Target (120 hrs)</span><span><span class="badge green">✓ Met</span></span></div>
+        <div class="attend-row"><span>Status</span><span><span class="badge green">On Track</span></span></div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="notif-panel" id="notifPanel">
+      <h3>🔔 Notifications</h3>
+      <div class="notif-item">
+        <div class="notif-dot green"></div>
+        <div class="notif-item-text">
+          <h4>Annual NSS Camp Registration Open</h4>
+          <p>7-day residential camp in March 2025. Register immediately.</p>
+        </div>
+        <div class="notif-time">Today</div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-dot blue"></div>
+        <div class="notif-item-text">
+          <h4>Blood Donation Drive — This Saturday</h4>
+          <p>Apollo Hospitals collaboration. Volunteers must report by 9 AM.</p>
+        </div>
+        <div class="notif-time">2 days ago</div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-dot amber"></div>
+        <div class="notif-item-text">
+          <h4>Attendance Sheet Updated</h4>
+          <p>Your attendance for Swachh Bharat Drive has been marked.</p>
+        </div>
+        <div class="notif-time">3 days ago</div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-dot blue"></div>
+        <div class="notif-item-text">
+          <h4>Certificate Ready: Voter Awareness Drive</h4>
+          <p>Your participation certificate is now available for download.</p>
+        </div>
+        <div class="notif-time">1 week ago</div>
+      </div>
+      <div class="notif-item">
+        <div class="notif-dot green"></div>
+        <div class="notif-item-text">
+          <h4>Monthly Meeting — 22nd March</h4>
+          <p>Venue: Seminar Hall, GIOE. Attendance is mandatory for all volunteers.</p>
+        </div>
+        <div class="notif-time">1 week ago</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENTS TABLE -->
+  <div class="events-section">
+    <div class="events-header">
+      <h3>My Events & Certificates</h3>
+      <div class="events-filter">
+        <button class="filter-btn active" onclick="filterEvents('all', this)">All</button>
+        <button class="filter-btn" onclick="filterEvents('attended', this)">Attended</button>
+        <button class="filter-btn" onclick="filterEvents('absent', this)">Absent</button>
+      </div>
+    </div>
+    <table id="eventsTable">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Date</th>
+          <th>Hours</th>
+          <th>Status</th>
+          <th>Certificate</th>
+        </tr>
+      </thead>
+      <tbody id="eventsBody">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GALLERY SECTION -->
+  <div class="gallery-section">
+    <div class="gallery-header">
+      <h3>Event Photos</h3>
+      <div class="gallery-tabs">
+        <button class="gallery-tab active" onclick="setGalleryTab('all', this)">All Events</button>
+        <button class="gallery-tab" onclick="setGalleryTab('plant', this)">Tree Plantation</button>
+        <button class="gallery-tab" onclick="setGalleryTab('blood', this)">Blood Drive</button>
+        <button class="gallery-tab" onclick="setGalleryTab('clean', this)">Swachh Bharat</button>
+      </div>
+    </div>
+    <div class="gallery-body" id="galleryBody">
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <div class="lightbox-emoji" id="lbEmoji">🌳</div>
+    <h3 id="lbTitle">Photo</h3>
+    <p id="lbDesc">NSS GIOE Event Photo</p>
+    <button class="lightbox-close" onclick="closeLightbox()">Close</button>
+  </div>
+</div>
+
+<!-- CERTIFICATE MODAL -->
+<div class="cert-modal" id="certModal">
+  <div class="cert-modal-inner">
+    <div class="cert-modal-header">
+      <h3 id="certModalTitle">Participation Certificate</h3>
+      <button class="cert-modal-close" onclick="closeCertModal()">✕</button>
+    </div>
+    <div class="cert-canvas-wrap">
+      <canvas id="certCanvas" width="560" height="396"></canvas>
+      <button class="cert-dl-full" onclick="downloadCert()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Download Certificate (PNG)
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────
+const STUDENT = {
+  name: 'Rahul Kumar',
+  initials: 'RK',
+  pin: 'NSS2024001',
+  batch: '2024–25',
+  dept: 'Electronics',
+  attendance: 78,
+  totalEvents: 18,
+  attended: 14,
+  absent: 4,
+  hours: 145,
+};
+
+const EVENTS = [
+  { id:1, name:'Tree Plantation Drive', cat:'Environment', date:'Oct 12, 2024', hours:6, attended:true, emoji:'🌳', tag:'plant' },
+  { id:2, name:'Blood Donation Camp', cat:'Health', date:'Nov 08, 2024', hours:8, attended:true, emoji:'🩸', tag:'blood' },
+  { id:3, name:'Swachh Bharat Abhiyan', cat:'Cleanliness', date:'Sep 24, 2024', hours:5, attended:true, emoji:'🧹', tag:'clean' },
+  { id:4, name:'Literacy & Awareness Camp', cat:'Education', date:'Aug 15, 2024', hours:6, attended:true, emoji:'📚', tag:'edu' },
+  { id:5, name:'Voter Awareness Drive', cat:'Civic', date:'Jul 20, 2024', hours:4, attended:true, emoji:'🗳️', tag:'civic' },
+  { id:6, name:'Health & Hygiene Camp', cat:'Health', date:'Jun 10, 2024', hours:7, attended:true, emoji:'💉', tag:'blood' },
+  { id:7, name:'Digital Literacy Workshop', cat:'Education', date:'May 22, 2024', hours:5, attended:true, emoji:'💻', tag:'edu' },
+  { id:8, name:'Road Safety Awareness', cat:'Civic', date:'Apr 18, 2024', hours:4, attended:true, emoji:'🚦', tag:'civic' },
+  { id:9, name:'Yoga & Wellness Day', cat:'Health', date:'Mar 30, 2024', hours:3, attended:true, emoji:'🧘', tag:'blood' },
+  { id:10, name:'Women Empowerment Talk', cat:'Social', date:'Mar 08, 2024', hours:5, attended:true, emoji:'👩‍🎓', tag:'edu' },
+  { id:11, name:'District NSS Rally', cat:'Cultural', date:'Feb 20, 2024', hours:6, attended:true, emoji:'🏃', tag:'civic' },
+  { id:12, name:'Campus Cleanliness Drive', cat:'Cleanliness', date:'Feb 05, 2024', hours:4, attended:true, emoji:'🏫', tag:'clean' },
+  { id:13, name:'Monthly Meeting Jan', cat:'Meeting', date:'Jan 25, 2024', hours:2, attended:false, emoji:'📋', tag:'civic' },
+  { id:14, name:'Republic Day March', cat:'Civic', date:'Jan 26, 2024', hours:4, attended:false, emoji:'🇮🇳', tag:'civic' },
+  { id:15, name:'Winter Camp Day 1', cat:'Camp', date:'Dec 20, 2023', hours:8, attended:false, emoji:'🏕️', tag:'clean' },
+  { id:16, name:'Winter Camp Day 2', cat:'Camp', date:'Dec 21, 2023', hours:8, attended:false, emoji:'🏕️', tag:'clean' },
+  { id:17, name:'NSS Foundation Day', cat:'Cultural', date:'Sep 24, 2023', hours:3, attended:true, emoji:'🎉', tag:'civic' },
+  { id:18, name:'Orientation Program', cat:'Meeting', date:'Aug 05, 2023', hours:2, attended:true, emoji:'📢', tag:'edu' },
+];
+
+const GALLERY_DATA = {
+  plant: [
+    { emoji:'🌳', label:'Saplings planted near Main Gate' },
+    { emoji:'🌿', label:'Volunteer group photo' },
+    { emoji:'🪴', label:'Haritha Haram ceremony' },
+    { emoji:'🌾', label:'College campus greening' },
+  ],
+  blood: [
+    { emoji:'🩸', label:'Blood donation at Apollo camp' },
+    { emoji:'🏥', label:'Medical screening volunteers' },
+    { emoji:'💉', label:'Health & hygiene drive' },
+    { emoji:'🧘', label:'Yoga wellness session' },
+  ],
+  clean: [
+    { emoji:'🧹', label:'Hussain Sagar cleanliness' },
+    { emoji:'♻️', label:'Waste segregation demo' },
+    { emoji:'🏫', label:'Campus cleanliness drive' },
+    { emoji:'🚮', label:'Awareness banner display' },
+  ],
+};
+
+// ── INIT ──────────────────────────────────────────
+document.getElementById('avatarEl').textContent = STUDENT.initials;
+document.getElementById('studentName').textContent = STUDENT.name;
+document.getElementById('studentMeta').textContent =
+  `NSS Volunteer · PIN: ${STUDENT.pin} · Batch ${STUDENT.batch}`;
+
+renderEvents('all');
+renderGallery('all');
+
+// ── EVENTS TABLE ──────────────────────────────────
+function renderEvents(filter) {
+  const tbody = document.getElementById('eventsBody');
+  const data = filter === 'all' ? EVENTS :
+    filter === 'attended' ? EVENTS.filter(e => e.attended) :
+    EVENTS.filter(e => !e.attended);
+
+  tbody.innerHTML = data.map(e => `
+    <tr class="${e.attended ? '' : 'absent-row'}" data-filter="${e.attended ? 'attended' : 'absent'}">
+      <td>
+        <div class="event-name">${e.emoji} ${e.name}</div>
+        <div class="event-cat">${e.cat}</div>
+      </td>
+      <td>${e.date}</td>
+      <td><span class="hours-pill">${e.hours}h</span></td>
+      <td>
+        ${e.attended
+          ? '<span class="badge green">✓ Attended</span>'
+          : '<span class="badge red">✗ Absent</span>'}
+      </td>
+      <td>
+        ${e.attended
+          ? `<button class="cert-dl-btn" onclick="openCertModal(${e.id})">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Download
+            </button>`
+          : '<span style="color:var(--text-muted); font-size:12px;">—</span>'}
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterEvents(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEvents(filter);
+}
+
+// ── GALLERY ──────────────────────────────────────
+function renderGallery(tab) {
+  const body = document.getElementById('galleryBody');
+  const tags = tab === 'all' ? ['plant','blood','clean'] : [tab];
+  const labels = { plant:'🌳 Tree Plantation Drive', blood:'🩸 Blood & Health Events', clean:'🧹 Cleanliness Drives' };
+
+  body.innerHTML = tags.map(tag => `
+    <div class="gallery-event-label">${labels[tag]}</div>
+    <div class="photo-grid">
+      ${GALLERY_DATA[tag].map((p,i) => `
+        <div class="photo-item" style="background:${getBg(tag,i)};" onclick="openLightbox('${p.emoji}','${p.label}','${labels[tag]}')">
+          ${p.emoji}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function setGalleryTab(tab, btn) {
+  document.querySelectorAll('.gallery-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGallery(tab);
+}
+
+function getBg(tag, i) {
+  const bgs = {
+    plant: ['#E8F5E9','#F1F8E9','#DCEDC8','#C8E6C9'],
+    blood: ['#FCE4EC','#FFF0F0','#FFE0B2','#E8F5E9'],
+    clean: ['#E3F2FD','#E0F7FA','#FFF8E1','#F3E5F5'],
+  };
+  return bgs[tag][i % 4];
+}
+
+// ── LIGHTBOX ──────────────────────────────────────
+function openLightbox(emoji, label, event) {
+  document.getElementById('lbEmoji').textContent = emoji;
+  document.getElementById('lbTitle').textContent = label;
+  document.getElementById('lbDesc').textContent = event + ' · NSS GIOE';
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+// ── CERTIFICATE ───────────────────────────────────
+let currentEvent = null;
+
+function openCertModal(eventId) {
+  currentEvent = EVENTS.find(e => e.id === eventId);
+  document.getElementById('certModalTitle').textContent = 'Certificate — ' + currentEvent.name;
+  document.getElementById('certModal').classList.add('open');
+  drawCert(currentEvent);
+}
+function closeCertModal() { document.getElementById('certModal').classList.remove('open'); }
+
+function drawCert(ev) {
+  const canvas = document.getElementById('certCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // Background
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, W, H);
+
+  // Outer border
+  ctx.strokeStyle = '#1565C0';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(10, 10, W - 20, H - 20);
+
+  // Inner border
+  ctx.strokeStyle = '#FFD600';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(20, 20, W - 40, H - 40);
+
+  // Header band
+  ctx.fillStyle = '#0D47A1';
+  ctx.fillRect(10, 10, W - 20, 70);
+
+  // NSS text in header
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = 'bold 18px "Space Grotesk", Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('NATIONAL SERVICE SCHEME', W/2, 42);
+
+  ctx.fillStyle = '#FFD600';
+  ctx.font = '13px "Space Grotesk", Arial';
+  ctx.fillText('Government Institute of Electronics, Hyderabad', W/2, 64);
+
+  // Title
+  ctx.fillStyle = '#1565C0';
+  ctx.font = 'bold 26px "Syne", Arial';
+  ctx.fillText('CERTIFICATE OF PARTICIPATION', W/2, 128);
+
+  // Underline
+  ctx.fillStyle = '#FFD600';
+  ctx.fillRect(W/2 - 180, 136, 360, 3);
+
+  // Body text
+  ctx.fillStyle = '#4A5568';
+  ctx.font = '14px "Space Grotesk", Arial';
+  ctx.fillText('This is to certify that', W/2, 178);
+
+  // Student name
+  ctx.fillStyle = '#0D47A1';
+  ctx.font = 'bold 24px "Syne", Arial';
+  ctx.fillText(STUDENT.name, W/2, 216);
+
+  // PIN
+  ctx.fillStyle = '#4A5568';
+  ctx.font = '12px "Space Grotesk", Arial';
+  ctx.fillText('PIN: ' + STUDENT.pin, W/2, 236);
+
+  // Body text 2
+  ctx.fillStyle = '#4A5568';
+  ctx.font = '13px "Space Grotesk", Arial';
+  ctx.fillText('has successfully participated in the NSS event', W/2, 268);
+
+  // Event name
+  ctx.fillStyle = '#0D47A1';
+  ctx.font = 'bold 16px "Space Grotesk", Arial';
+  ctx.fillText(ev.emoji + '  ' + ev.name, W/2, 296);
+
+  // Date and hours
+  ctx.fillStyle = '#4A5568';
+  ctx.font = '12px "Space Grotesk", Arial';
+  ctx.fillText('Date: ' + ev.date + '  |  Service Hours: ' + ev.hours + ' hrs', W/2, 320);
+
+  // Signature area
+  ctx.fillStyle = '#0D47A1';
+  ctx.font = 'bold 13px "Space Grotesk", Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('Programme Officer', 48, 370);
+
+  ctx.textAlign = 'right';
+  ctx.fillText('NSS Unit, GIOE Hyderabad', W - 48, 370);
+
+  // Signature lines
+  ctx.strokeStyle = '#D0DCF0';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(40, 358); ctx.lineTo(180, 358); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W - 180, 358); ctx.lineTo(W - 40, 358); ctx.stroke();
+
+  // Batch
+  ctx.fillStyle = '#9CA3AF';
+  ctx.font = '11px "Space Grotesk", Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Batch: ' + STUDENT.batch + '  |  NSS GIOE  |  nss@gioe.ac.in', W/2, 385);
+}
+
+function downloadCert() {
+  const canvas = document.getElementById('certCanvas');
+  const a = document.createElement('a');
+  a.download = 'NSS_Certificate_' + STUDENT.pin + '_' + (currentEvent ? currentEvent.id : '') + '.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+function scrollToNotif() {
+  document.getElementById('notifPanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function logout() {
+  if (confirm('Are you sure you want to logout?')) {
+    localStorage.removeItem('nss_user');
+    window.location.href = 'nss_gioe_homepage.html';
+  }
+}
+</script>
+</body>
+</html>
